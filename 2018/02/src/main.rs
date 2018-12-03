@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-fn charmap(code: &str) -> HashMap<char, u32> {
-    let mut freq: HashMap<char, u32> = HashMap::new();
+fn charmap(code: &str) -> HashMap<char, u8> {
+    let mut freq: HashMap<char, u8> = HashMap::new();
     for c in code.chars() {
         *freq.entry(c).or_insert(0) += 1;
     }

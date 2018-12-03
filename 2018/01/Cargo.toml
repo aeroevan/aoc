@@ -4,3 +4,6 @@ version = "0.1.0"
 authors = ["Evan McClain <aeroevan@gmail.com>"]
 
 [dependencies]
+
+[profile.release]
+lto = true
