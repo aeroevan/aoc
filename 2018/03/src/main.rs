@@ -17,10 +17,10 @@ struct Claim {
 }
 impl Claim {
     fn xrange(&self) -> std::ops::Range<usize> {
-        (self.left)..(self.left+self.width)
+        (self.left)..(self.left + self.width)
     }
     fn yrange(&self) -> std::ops::Range<usize> {
-        (self.top)..(self.top+self.height)
+        (self.top)..(self.top + self.height)
     }
 }
 fn parse_line(line: &str) -> Claim {
@@ -87,7 +87,7 @@ fn main() {
             }
         }
         // the only one with no overlap should now be 2 for every cell
-        let exp = 2*c.width * c.height;
+        let exp = 2 * c.width * c.height;
         if exp == n {
             println!("{:?}", c);
             break 'outer;
