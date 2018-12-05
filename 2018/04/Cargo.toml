@@ -1,0 +1,11 @@
+[package]
+name = "advent-2018-04"
+version = "0.1.0"
+authors = ["Evan McClain <aeroevan@gmail.com>"]
+
+[dependencies]
+regex = "1"
+lazy_static = "1.2"
+
+[profile.release]
+lto = true
