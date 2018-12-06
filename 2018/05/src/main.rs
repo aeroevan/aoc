@@ -2,8 +2,10 @@ use std::collections::HashSet;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::iter::FromIterator;
+use std::time::Instant;
 
 fn is_reacting(a: char, b: char) -> bool {
+    // apparently aa doens't react
     a.eq_ignore_ascii_case(&b) && a != b
 }
 
@@ -40,8 +42,14 @@ fn main() {
     let reader = BufReader::new(&file);
     let line: String = reader.lines().filter_map(|l| l.ok()).next().unwrap();
     let chars: Vec<char> = Vec::from_iter(line.chars());
+    let t1 = Instant::now();
     let reacted = process_reaction(chars.as_slice());
+    let t2 = Instant::now();
     println!("{}", reacted.len());
-    let collapsed = collapsed_reaction(chars.as_slice());
+    println!("{:?}", t2 - t1);
+    let t3 = Instant::now();
+    let collapsed = collapsed_reaction(reacted.as_slice());
+    let t4 = Instant::now();
     println!("{}", collapsed.len());
+    println!("{:?}", t4 - t3);
 }
