@@ -41,13 +41,13 @@ fn nearest(i: usize, j: usize, coords: &[Coordinate]) -> u32 {
         .map(|(d, _)| d)
         .expect("no min");
     if dists.iter().filter(|(d, _)| d == mindist).count() > 1 {
-        return 0u32;
+        0u32
     } else {
-        return dists
+        dists
             .iter()
             .min_by_key(|(d, _)| d)
             .map(|(_, v)| v.id)
-            .expect("no min2");
+            .expect("no min2")
     }
 }
 
@@ -80,7 +80,7 @@ fn ids_on_edge(board: &[Vec<u32>]) -> HashSet<u32> {
         .collect()
 }
 
-fn counts(board: &[Vec<u32>], infinite: HashSet<u32>) -> HashMap<u32, u32> {
+fn counts(board: &[Vec<u32>], infinite: &HashSet<u32>) -> HashMap<u32, u32> {
     let mut count: HashMap<u32, u32> = HashMap::new();
     let vals = board
         .iter()
@@ -94,7 +94,7 @@ fn counts(board: &[Vec<u32>], infinite: HashSet<u32>) -> HashMap<u32, u32> {
 
 fn main() {
     const FNAME: &str = "input.txt";
-    let file = File::open(FNAME).expect(&format!("Couldn't open {}", FNAME));
+    let file = File::open(FNAME).expect("Couldn't open input.txt");
     let reader = BufReader::new(&file);
     let coords: Vec<Coordinate> = Vec::from_iter(
         reader
@@ -122,17 +122,17 @@ fn main() {
     let mut board: Vec<Vec<u32>> = initialize_board(width, height);
     for (i, row) in board.iter_mut().enumerate() {
         for (j, mut cell) in row.iter_mut().enumerate() {
-            *cell = nearest(i, j, coords.as_slice()).clone();
+            *cell = nearest(i, j, coords.as_slice());
         }
     }
     let infinite: HashSet<u32> = ids_on_edge(board.as_slice());
-    let cnts = counts(board.as_slice(), infinite);
+    let cnts = counts(board.as_slice(), &infinite);
     let m = cnts.iter().max_by_key(|&(_, v)| v).expect("k");
     println!("{:?}", m.1);
     let mut board2: Vec<Vec<u32>> = initialize_board(width, height);
     for (i, row) in board2.iter_mut().enumerate() {
         for (j, mut cell) in row.iter_mut().enumerate() {
-            let t = total(i, j, coords.as_slice()).clone();
+            let t = total(i, j, coords.as_slice());
             if t < 10000 {
                 *cell = 1;
             } else {
