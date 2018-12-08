@@ -26,8 +26,8 @@ impl Node {
             let mut total: u64 = 0;
             for idx in &self.metadata {
                 let i: usize = *idx as usize;
-                if i > 0  && i < self.children.len() + 1 {
-                    total += &self.children[i-1].value();
+                if i > 0 && i < self.children.len() + 1 {
+                    total += &self.children[i - 1].value();
                 }
             }
             total
@@ -52,16 +52,16 @@ fn build_node(numbers: &[u8]) -> (Node, Vec<u8>) {
         metadata.push(metadata_iter.next().unwrap());
     }
     new_numbers = Vec::from_iter(metadata_iter);
-    (Node {children, metadata}, new_numbers)
+    (Node { children, metadata }, new_numbers)
 }
-
 
 fn main() {
     const FNAME: &str = "input.txt";
     let file = File::open(FNAME).expect(&format!("Couldn't open {}", FNAME));
     let reader = BufReader::new(&file);
     let line: String = reader.lines().filter_map(|l| l.ok()).next().unwrap();
-    let numbers: Vec<u8> = Vec::from_iter(line.split(' ').map(|v| v.parse().expect("not a number?")));
+    let numbers: Vec<u8> =
+        Vec::from_iter(line.split(' ').map(|v| v.parse().expect("not a number?")));
     let (node, _) = build_node(numbers.as_slice());
     println!("{}", node.total_metadata());
     println!("{}", node.value());
