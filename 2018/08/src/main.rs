@@ -3,13 +3,7 @@ use std::io::{BufRead, BufReader};
 use std::iter::FromIterator;
 
 #[derive(Debug)]
-struct Header {
-    children: u8,
-    metadata: u8,
-}
-#[derive(Debug)]
 struct Node {
-    header: Header,
     children: Vec<Node>,
     metadata: Vec<u8>,
 }
@@ -43,24 +37,22 @@ impl Node {
 
 fn build_node(numbers: &[u8]) -> (Node, Vec<u8>) {
     let mut header_iter = numbers.iter().cloned();
-    let header: Header = Header {
-        children: header_iter.next().unwrap(),
-        metadata: header_iter.next().unwrap(),
-    };
+    let num_children: u8 = header_iter.next().unwrap();
+    let num_metadata: u8 = header_iter.next().unwrap();
     let mut new_numbers: Vec<u8> = Vec::from_iter(header_iter);
     let mut children: Vec<Node> = Vec::new();
-    for _ in 0..header.children {
+    for _ in 0..num_children {
         let (node, updated_numbers) = build_node(new_numbers.as_slice());
         new_numbers = updated_numbers;
         children.push(node);
     }
     let mut metadata_iter = new_numbers.iter().cloned();
     let mut metadata: Vec<u8> = Vec::new();
-    for _ in 0..header.metadata {
+    for _ in 0..num_metadata {
         metadata.push(metadata_iter.next().unwrap());
     }
     new_numbers = Vec::from_iter(metadata_iter);
-    (Node {header, children, metadata}, new_numbers)
+    (Node {children, metadata}, new_numbers)
 }
 
 
