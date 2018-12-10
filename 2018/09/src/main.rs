@@ -2,10 +2,8 @@
 extern crate lazy_static;
 extern crate regex;
 use regex::Regex;
-use std::collections::{HashMap, VecDeque};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::iter::FromIterator;
 use std::usize;
 
 #[derive(Debug, Clone, Copy)]
@@ -42,9 +40,10 @@ fn play(conf: Configuration) -> u64 {
     let mut curidx: usize = 0;
     let mut nextidx: usize = 1;
 
-    for marble in 0..(conf.last_marble+1) {
-        if marble % 23 != 0 {
+    for marble in 0..=conf.last_marble {
+        if marble % 23 == 0 {
             // move next
+            // 0 -> 0 first, next one we'll have initialized
             curidx = circle[curidx].next;
             // where current marble points
             let next = circle[curidx].next;
@@ -60,13 +59,13 @@ fn play(conf: Configuration) -> u64 {
             nextidx += 1;
         } else {
             // score player
-            players[(marble % (conf.num_players as u64)) as usize] += marble;
+            players[(marble % u64::from(conf.num_players)) as usize] += marble;
             // move back 7 times...
             for _ in 0..7 {
                 curidx = circle[curidx].prev;
             }
             // add vale
-            players[(marble % (conf.num_players as u64)) as usize] += circle[curidx].value;
+            players[(marble % u64::from(conf.num_players)) as usize] += circle[curidx].value;
             // now "delete" by linking the prev/next marbles to each other
             let prev = circle[curidx].prev;
             let next = circle[curidx].next;
@@ -79,50 +78,6 @@ fn play(conf: Configuration) -> u64 {
     players.iter().cloned().max().unwrap()
 }
 
-fn scores(conf: Configuration) -> Vec<(u16, u64)> {
-    let mut curidx: usize = 0;
-    let mut scores: Vec<(u16, u64)> = Vec::new();
-    let mut circle: VecDeque<u64> = VecDeque::new();
-    let players: u64 = conf.num_players as u64;
-    for i in 0..(conf.last_marble + 1) {
-        if i > 0 && i % 23 == 0 {
-            // pop score
-            let mut tmpidx: i64 = curidx as i64 - 7;
-            if tmpidx < 0 {
-                tmpidx += circle.len() as i64;
-            }
-            curidx = (tmpidx as usize) % circle.len();
-            let score = circle.remove(curidx).expect("No value?") + i;
-            scores.push(((i % players) as u16, score));
-        } else {
-            if circle.len() < 3 {
-                curidx = 1;
-            } else {
-                if curidx + 2 == circle.len() {
-                    curidx = circle.len();
-                } else {
-                    curidx = (curidx + 2) % circle.len();
-                }
-            }
-            if curidx >= circle.len() {
-                circle.push_back(i);
-            } else {
-                circle.insert(curidx, i);
-            }
-        }
-    }
-    scores
-}
-
-fn part1(conf: Configuration) -> u64 {
-    let s = scores(conf);
-    let mut players: HashMap<u16, u64> = HashMap::new();
-    for (p, v) in &s {
-        *players.entry(*p).or_insert(0) += v;
-    }
-    players.values().cloned().max().expect("No values?")
-}
-
 fn main() {
     const FNAME: &str = "input.txt";
     let file = File::open(FNAME).expect(&format!("Couldn't open {}", FNAME));
@@ -133,15 +88,9 @@ fn main() {
         .next()
         .map(|l| Configuration::from_line(l.as_str()))
         .expect("No lines?");
-    println!("{:?}", conf);
-    println!(
-        "{:?}",
-        part1(Configuration {
-            num_players: 9,
-            last_marble: 25,
-        })
-    );
+    // part 1
     println!("{}", play(conf));
+    // part 2
     println!(
         "{}",
         play(Configuration {
