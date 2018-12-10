@@ -36,12 +36,19 @@ struct Marble {
 
 fn play(conf: Configuration) -> u64 {
     let mut players: Vec<u64> = vec![0; conf.num_players as usize];
-    let mut circle: Vec<Marble> = vec![Marble{value: 0, next: 0, prev: 0}; conf.last_marble as usize];
+    let mut circle: Vec<Marble> = vec![
+        Marble {
+            value: 0,
+            next: 0,
+            prev: 0
+        };
+        conf.last_marble as usize
+    ];
     let mut curidx: usize = 0;
     let mut nextidx: usize = 1;
 
     for marble in 0..=conf.last_marble {
-        if marble % 23 == 0 {
+        if marble % 23 != 0 {
             // move next
             // 0 -> 0 first, next one we'll have initialized
             curidx = circle[curidx].next;
@@ -75,7 +82,7 @@ fn play(conf: Configuration) -> u64 {
         }
     }
 
-    players.iter().cloned().max().unwrap()
+    *players.iter().max().unwrap()
 }
 
 fn main() {
